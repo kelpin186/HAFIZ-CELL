@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+  <!DOCTYPE html>
 <html lang="id" class="dark">
 <head>
     <meta charset="UTF-8">
@@ -107,9 +107,159 @@
         ::-webkit-scrollbar-track { background: #06090e; }
         ::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 3px; }
         ::-webkit-scrollbar-thumb:hover { background: #00f2fe; }
+    
+        /* ===== JAVASCRIPT ANIMATION ENHANCEMENTS ===== */
+        html { scroll-behavior: smooth; }
+
+        #js-particles {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 1;
+            overflow: hidden;
+        }
+        .js-particle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            border-radius: 50%;
+            background: #00f2fe;
+            opacity: .45;
+            box-shadow: 0 0 12px #00f2fe;
+            animation: particleFloat linear infinite;
+        }
+        @keyframes particleFloat {
+            from { transform: translate3d(0, 110vh, 0) scale(.5); opacity: 0; }
+            15% { opacity: .55; }
+            85% { opacity: .35; }
+            to { transform: translate3d(var(--drift), -15vh, 0) scale(1.4); opacity: 0; }
+        }
+
+        #cursorGlow {
+            position: fixed;
+            width: 180px;
+            height: 180px;
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 0;
+            background: radial-gradient(circle, rgba(0,242,254,.12), transparent 68%);
+            transform: translate(-50%, -50%);
+            transition: left .08s linear, top .08s linear;
+        }
+
+        .js-reveal {
+            opacity: 0;
+            transform: translateY(28px);
+            transition: opacity .7s ease, transform .7s ease;
+        }
+        .js-reveal.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .js-shimmer {
+            position: relative;
+            overflow: hidden;
+        }
+        .js-shimmer::after {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: -120%;
+            width: 55%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,.12), transparent);
+            transform: skewX(-20deg);
+            animation: shimmer 4s infinite;
+            pointer-events: none;
+        }
+        @keyframes shimmer {
+            0%, 55% { left: -120%; }
+            75%, 100% { left: 140%; }
+        }
+
+        .js-tilt {
+            transform-style: preserve-3d;
+            will-change: transform;
+        }
+
+        .js-ripple {
+            position: absolute;
+            border-radius: 50%;
+            transform: scale(0);
+            animation: ripple .6s linear;
+            background: rgba(255,255,255,.35);
+            pointer-events: none;
+        }
+        @keyframes ripple { to { transform: scale(4); opacity: 0; } }
+
+        #scrollProgress {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 3px;
+            width: 0%;
+            z-index: 9999;
+            background: linear-gradient(90deg,#00f2fe,#7928ca,#ff0080);
+            box-shadow: 0 0 12px rgba(0,242,254,.8);
+        }
+
+        #backTop {
+            position: fixed;
+            right: 18px;
+            bottom: 18px;
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            border: 1px solid rgba(0,242,254,.4);
+            background: rgba(6,9,14,.82);
+            color: #00f2fe;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 60;
+            opacity: 0;
+            transform: translateY(15px) scale(.8);
+            pointer-events: none;
+            transition: .3s ease;
+            box-shadow: 0 0 20px rgba(0,242,254,.18);
+            cursor: pointer;
+        }
+        #backTop.show {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+            pointer-events: auto;
+        }
+
+        .js-type-cursor {
+            display: inline-block;
+            width: 2px;
+            height: 1em;
+            margin-left: 3px;
+            vertical-align: -2px;
+            background: #00f2fe;
+            animation: cursorBlink .7s infinite;
+        }
+        @keyframes cursorBlink { 50% { opacity: 0; } }
+
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: .01ms !important;
+                animation-iteration-count: 1 !important;
+                scroll-behavior: auto !important;
+                transition-duration: .01ms !important;
+            }
+        }
+
     </style>
 </head>
 <body class="min-h-screen flex flex-col justify-between selection:bg-cyan-500 selection:text-black">
+
+    <!-- JavaScript animated layers -->
+    <div id="scrollProgress"></div>
+    <div id="cursorGlow"></div>
+    <div id="js-particles" aria-hidden="true"></div>
+
 
     <!-- Background Animated Glow Blobs -->
     <div class="fixed top-0 left-1/4 w-[500px] h-[500px] bg-cyan-500/10 rounded-full filter blur-[120px] pointer-events-none animate-pulse-glow"></div>
@@ -141,7 +291,7 @@
         </div>
     </header>
 
-    <section class="relative py-8 md:py-10 px-4">
+    <section class="relative py-8 md:py-10 px-4 js-shimmer">
         <div class="max-w-3xl mx-auto text-center">
             <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-cyan-500/10 border border-cyan-500/20 text-cyan-300 text-xs font-semibold mb-3 animate-float">
                 <span class="w-2 h-2 rounded-full bg-cyan-400 animate-ping"></span>
@@ -195,7 +345,7 @@
                     <i class="fas fa-bolt"></i> Token PLN
                 </button>
                 <button onclick="switchCategory('emoney')" id="tab-emoney" 
-                        class="tab-btn flex-1 min-w-[110px] py-3 px-3 rounded-xl text-xs font-bold flex items-center justify-center gap-2 text-gray-400 hover:text-white hover:bg-white/5 transition-all duration-300">
+                         class="tab-btn flex-1 min-w-[110px] py-3 px-3 rounded-xl text-xs font-bold flex items-center justify-center gap-2 text-gray-400 hover:text-white hover:bg-white/5 transition-all duration-300">
                     <i class="fas fa-wallet"></i> E-Money
                 </button>
             </div>
@@ -391,6 +541,11 @@
         </div>
     </div>
 
+
+    <button id="backTop" aria-label="Kembali ke atas" title="Kembali ke atas">
+        <i class="fas fa-arrow-up"></i>
+    </button>
+
     <footer class="glass-panel border-t border-white/10 py-6 mt-10">
         <div class="max-w-4xl mx-auto px-4 text-center">
             <p class="text-xs text-gray-400">
@@ -401,6 +556,201 @@
             </p>
         </div>
     </footer>
+
+
+    <script>
+    /* ===== SYAHDAN CELL - JAVASCRIPT ANIMATION ENGINE ===== */
+    (() => {
+        const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+        // 1. Floating particles
+        const particleBox = document.getElementById('js-particles');
+        if (particleBox && !reduceMotion) {
+            for (let i = 0; i < 26; i++) {
+                const p = document.createElement('span');
+                p.className = 'js-particle';
+                p.style.left = Math.random() * 100 + '%';
+                p.style.setProperty('--drift', (Math.random() * 180 - 90) + 'px');
+                p.style.animationDuration = (8 + Math.random() * 12) + 's';
+                p.style.animationDelay = (-Math.random() * 15) + 's';
+                p.style.opacity = (0.2 + Math.random() * .4).toFixed(2);
+                particleBox.appendChild(p);
+            }
+        }
+
+        // 2. Cursor glow
+        const glow = document.getElementById('cursorGlow');
+        if (glow && !reduceMotion && window.matchMedia('(pointer:fine)').matches) {
+            document.addEventListener('mousemove', e => {
+                glow.style.left = e.clientX + 'px';
+                glow.style.top = e.clientY + 'px';
+            }, { passive: true });
+        } else if (glow) {
+            glow.style.display = 'none';
+        }
+
+        // 3. Scroll progress + back-to-top
+        const progress = document.getElementById('scrollProgress');
+        const backTop = document.getElementById('backTop');
+
+        const updateScrollUI = () => {
+            const max = document.documentElement.scrollHeight - window.innerHeight;
+            const percent = max > 0 ? (window.scrollY / max) * 100 : 0;
+            if (progress) progress.style.width = percent + '%';
+            if (backTop) backTop.classList.toggle('show', window.scrollY > 450);
+        };
+        window.addEventListener('scroll', updateScrollUI, { passive: true });
+        updateScrollUI();
+
+        backTop?.addEventListener('click', () => {
+            window.scrollTo({ top: 0, behavior: reduceMotion ? 'auto' : 'smooth' });
+        });
+
+        // 4. Reveal elements when entering viewport
+        const addReveal = () => {
+            const targets = document.querySelectorAll(
+                'section, main > div, footer, .glass-card, #productGrid, .glass-panel'
+            );
+            targets.forEach((el, i) => {
+                if (!el.classList.contains('js-reveal') &&
+                    !el.closest('#paymentModal') &&
+                    !el.closest('header')) {
+                    el.classList.add('js-reveal');
+                    el.style.transitionDelay = Math.min((i % 6) * 55, 275) + 'ms';
+                }
+            });
+
+            if (reduceMotion) {
+                targets.forEach(el => el.classList.add('visible'));
+                return;
+            }
+
+            const observer = new IntersectionObserver(entries => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('visible');
+                        observer.unobserve(entry.target);
+                    }
+                });
+            }, { threshold: .08 });
+
+            document.querySelectorAll('.js-reveal').forEach(el => observer.observe(el));
+        };
+
+        // 5. Tilt effect for product cards
+        const enableTilt = () => {
+            if (reduceMotion || !window.matchMedia('(pointer:fine)').matches) return;
+
+            document.querySelectorAll('.glass-card').forEach(card => {
+                if (card.dataset.tiltReady) return;
+                card.dataset.tiltReady = '1';
+                card.classList.add('js-tilt');
+
+                card.addEventListener('mousemove', e => {
+                    const r = card.getBoundingClientRect();
+                    const x = (e.clientX - r.left) / r.width - .5;
+                    const y = (e.clientY - r.top) / r.height - .5;
+                    card.style.transform =
+                        `perspective(700px) rotateX(${(-y * 7).toFixed(2)}deg) rotateY(${(x * 7).toFixed(2)}deg) translateY(-5px)`;
+                });
+
+                card.addEventListener('mouseleave', () => {
+                    card.style.transform = '';
+                });
+            });
+        };
+
+        // 6. Ripple effect for buttons
+        document.addEventListener('click', e => {
+            const btn = e.target.closest('button, a');
+            if (!btn || reduceMotion) return;
+
+            const rect = btn.getBoundingClientRect();
+            const ripple = document.createElement('span');
+            ripple.className = 'js-ripple';
+            const size = Math.max(rect.width, rect.height);
+            ripple.style.width = ripple.style.height = size + 'px';
+            ripple.style.left = (e.clientX - rect.left - size / 2) + 'px';
+            ripple.style.top = (e.clientY - rect.top - size / 2) + 'px';
+
+            if (getComputedStyle(btn).position === 'static') btn.style.position = 'relative';
+            btn.style.overflow = 'hidden';
+            btn.appendChild(ripple);
+            setTimeout(() => ripple.remove(), 650);
+        });
+
+        // 7. Animate product grid whenever products are rendered
+        const observeProductGrid = () => {
+            const grid = document.getElementById('productGrid');
+            if (!grid) return;
+
+            const observer = new MutationObserver(() => {
+                requestAnimationFrame(() => {
+                    grid.querySelectorAll('.glass-card').forEach((card, i) => {
+                        card.classList.remove('js-reveal', 'visible');
+                        card.classList.add('js-reveal');
+                        card.style.transitionDelay = Math.min(i * 45, 300) + 'ms';
+                        requestAnimationFrame(() => card.classList.add('visible'));
+                    });
+                    setTimeout(enableTilt, 30);
+                });
+            });
+            observer.observe(grid, { childList: true });
+        };
+
+        // 8. Typewriter subtitle in hero
+        const typewriter = () => {
+            const title = document.querySelector('h2');
+            if (!title || reduceMotion) return;
+
+            const span = title.querySelector('span');
+            if (!span || span.dataset.typed) return;
+            span.dataset.typed = '1';
+
+            const original = span.textContent.trim();
+            span.textContent = '';
+            const cursor = document.createElement('i');
+            cursor.className = 'js-type-cursor';
+            span.appendChild(cursor);
+
+            let i = 0;
+            const type = () => {
+                if (i < original.length) {
+                    cursor.before(document.createTextNode(original[i++]));
+                    setTimeout(type, 70);
+                } else {
+                    setTimeout(() => cursor.remove(), 1800);
+                }
+            };
+            setTimeout(type, 500);
+        };
+
+        // 9. Small entrance effect for header logo
+        const header = document.querySelector('header');
+        if (header && !reduceMotion) {
+            header.animate(
+                [
+                    { opacity: 0, transform: 'translateY(-18px)' },
+                    { opacity: 1, transform: 'translateY(0)' }
+                ],
+                { duration: 700, easing: 'cubic-bezier(.2,.8,.2,1)', fill: 'both' }
+            );
+        }
+
+        const initAnimations = () => {
+            addReveal();
+            observeProductGrid();
+            enableTilt();
+            typewriter();
+        };
+
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initAnimations);
+        } else {
+            initAnimations();
+        }
+    })();
+    </script>
 
     <script>
         const OWNER_WA = "6283833039228";
